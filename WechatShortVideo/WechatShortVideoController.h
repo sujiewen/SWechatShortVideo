@@ -41,6 +41,7 @@
 @interface WechatShortVideoController : UIViewController
 
 @property (nonatomic) CGFloat maxRecordDuration;
+@property (nonatomic, strong) NSString *strFilePath;
 @property (nonatomic, readonly) SCRecorder *recorder;
 
 @property(nonatomic, weak) id<WechatShortVideoDelegate> delegate;

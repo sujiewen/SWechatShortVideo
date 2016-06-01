@@ -396,10 +396,10 @@
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     
     SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:_recorder.session.assetRepresentingSegments];
-    exportSession.videoConfiguration.preset = SCPresetHighestQuality;
-    exportSession.audioConfiguration.preset = SCPresetHighestQuality;
+    exportSession.videoConfiguration.preset = SCPresetMediumQuality;
+    exportSession.audioConfiguration.preset = SCPresetMediumQuality;
     exportSession.videoConfiguration.maxFrameRate = 35;
-    exportSession.outputUrl = VIDEO_OUTPUTFILE;
+    exportSession.outputUrl = (_strFilePath == nil ? VIDEO_OUTPUTFILE  : [NSURL fileURLWithPath:_strFilePath]);
     exportSession.outputFileType = AVFileTypeMPEG4;
     exportSession.delegate = self;
     

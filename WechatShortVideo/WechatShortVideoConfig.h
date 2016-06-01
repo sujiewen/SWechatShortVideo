@@ -31,7 +31,7 @@
 //utils
 #define WeALColor(r, g, b)         [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1.0]
 #define WeALAColor(r, g, b, a)     [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
-#define PATH_OF_DOCUMENT         [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+#define PATH_OF_DOCUMENT         [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 
 #ifndef WechatShortVideo_WechatShortVideoConfig_h
 #define WechatShortVideo_WechatShortVideoConfig_h
@@ -44,7 +44,7 @@
 //Video file time length limitation (Minimum Seconds)
 #define VIDEO_VALID_MINTIME  0.8
 //Video filename
-static NSString *VIDEO_DEFAULTNAME = @"videoReadyToUpload.mov";
+static NSString *VIDEO_DEFAULTNAME = @"videoReadyToUpload.mp4";
 
 //Tip Strings pressed on the record area
 #define OPERATE_RECORD_TIP  @"↑上移取消"

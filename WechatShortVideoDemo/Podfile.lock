@@ -1,0 +1,16 @@
+PODS:
+  - MBProgressHUD (0.9.2)
+  - PureLayout (3.0.1)
+  - SCRecorder (2.6.1)
+
+DEPENDENCIES:
+  - MBProgressHUD (~> 0.9.2)
+  - PureLayout (~> 3.0.1)
+  - SCRecorder (~> 2.6.1)
+
+SPEC CHECKSUMS:
+  MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
+  PureLayout: f35f5384c9c4e4479df041dbe33ad7577b71ddfb
+  SCRecorder: ef11bc34094c43201cc7c94fa9aeb5266e5b9cf7
+
+COCOAPODS: 0.39.0

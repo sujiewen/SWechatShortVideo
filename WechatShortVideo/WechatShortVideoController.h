@@ -30,6 +30,7 @@
 
 #import <UIKit/UIKit.h>
 #import "WechatShortVideoConfig.h"
+#import "SCRecorder.h"
 
 @protocol WechatShortVideoDelegate <NSObject>
 
@@ -38,6 +39,9 @@
 @end
 
 @interface WechatShortVideoController : UIViewController
+
+@property (nonatomic) CGFloat maxRecordDuration;
+@property (nonatomic, readonly) SCRecorder *recorder;
 
 @property(nonatomic, weak) id<WechatShortVideoDelegate> delegate;
 

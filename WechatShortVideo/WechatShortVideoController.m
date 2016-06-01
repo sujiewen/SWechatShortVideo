@@ -46,21 +46,22 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *middleProgressViewWidthConstraint;
 @property (strong, nonatomic) NSTimer *exportProgressBarTimer;
 @property (strong, nonatomic) MBProgressHUD *progressHUD;
+@property (strong, nonatomic) SCRecorder *recorder;
 
 @end
 
 @implementation WechatShortVideoController {
     BOOL captureValidFlag;
-    SCRecorder *_recorder;
-    SCRecordSession *_recordSession;
+//    SCRecordSession *_recordSession;
     NSTimer *longPressTimer;
     
     //Preview
-    SCPlayer *_player;
+    SCPlayer *player;
     
     //Video filepath
     NSURL *VIDEO_OUTPUTFILE;
 }
+
 
 @synthesize delegate;
 
@@ -77,13 +78,18 @@
 #pragma mark - Life Cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self loadAotoLayoutSubviews];
+    
     // Do any additional setup after loading the view from its nib.
     VIDEO_OUTPUTFILE = [NSURL fileURLWithPath:[PATH_OF_DOCUMENT stringByAppendingPathComponent:VIDEO_DEFAULTNAME]];
     
     captureValidFlag = NO;
+    _maxRecordDuration = 0;
     
     [self configRecorder];
     [self configControlStyle];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -117,8 +123,12 @@
 
 - (void)dealloc {
     _recorder.previewView = nil;
-    [_player pause];
-    _player = nil;
+    [player pause];
+    player = nil;
+}
+
+- (void)loadAotoLayoutSubviews {
+    
 }
 
 
@@ -126,7 +136,7 @@
 - (void)configRecorder {
     _recorder = [SCRecorder recorder];
     _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
-    _recorder.maxRecordDuration = CMTimeMake(30 * VIDEO_MAX_TIME, 30);
+    _recorder.maxRecordDuration = CMTimeMake(30 * (_maxRecordDuration <= 1 ? VIDEO_MAX_TIME : _maxRecordDuration), 30);
     _recorder.delegate = self;
     _recorder.autoSetVideoOrientation = YES;
     
@@ -141,10 +151,50 @@
     self.focusView.outsideFocusTargetImage = [UIImage imageNamed:@"WechatShortVideo_scan_focus"];
     _recorder.initializeSessionLazily = NO;
     
+    // Get the video configuration object
+    SCVideoConfiguration *video = _recorder.videoConfiguration;
+    video.size = CGSizeMake(320, 240);
+    
     NSError *error;
     if (![_recorder prepare:&error]) {
         NSLog(@"Prepare error: %@", error.localizedDescription);
     }
+    
+//    // Get the video configuration object
+//    SCVideoConfiguration *video = recorder.videoConfiguration;
+
+//    // Whether the video should be enabled or not
+//    video.enabled = YES;
+//    // The bitrate of the video video
+//    video.bitrate = 2000000; // 2Mbit/s
+//    // Size of the video output
+//    video.size = CGSizeMake(1280, 720);
+//    // Scaling if the output aspect ratio is different than the output one
+//    video.scalingMode = AVVideoScalingModeResizeAspectFill;
+//    // The timescale ratio to use. Higher than 1 makes a slow motion, between 0 and 1 makes a timelapse effect
+//    video.timeScale = 1;
+//    // Whether the output video size should be infered so it creates a square video
+//    video.sizeAsSquare = NO;
+//    // The filter to apply to each output video buffer (this do not affect the presentation layer)
+//    video.filter = [SCFilter filterWithCIFilterName:@"CIPhotoEffectInstant"];
+//    
+//    // Get the audio configuration object
+//    SCAudioConfiguration *audio = recorder.audioConfiguration;
+//    
+//    // Whether the audio should be enabled or not
+//    audio.enabled = YES;
+//    // the bitrate of the audio output
+//    audio.bitrate = 128000; // 128kbit/s
+//    // Number of audio output channels
+//    audio.channelsCount = 1; // Mono output
+//    // The sample rate of the audio output
+//    audio.sampleRate = 0; // Use same input
+//    // The format of the audio output
+//    audio.format = kAudioFormatMPEG4AAC; // AAC
+//    
+//    // Get the photo configuration object
+//    SCPhotoConfiguration *photo = recorder.photoConfiguration;
+//    photo.enabled = NO;
 }
 
 - (void)configControlStyle {
@@ -170,7 +220,7 @@
 
 - (void)refreshProgressViewLengthByTime:(CMTime)duration {
     CGFloat durationTime = CMTimeGetSeconds(duration);
-    CGFloat progressWidthConstant = (VIDEO_MAX_TIME - durationTime) / VIDEO_MAX_TIME * self.middleTipView.frame.size.width;
+    CGFloat progressWidthConstant = ((_maxRecordDuration <= 1 ? VIDEO_MAX_TIME : _maxRecordDuration) - durationTime) / (_maxRecordDuration <= 1 ? VIDEO_MAX_TIME : _maxRecordDuration) * self.middleTipView.frame.size.width;
     self.middleProgressViewWidthConstraint.constant = progressWidthConstant >= 0 ? progressWidthConstant : 0;
 }
 
@@ -262,17 +312,17 @@
     [self hideCaptureBtn];
     self.captureRealBtn.enabled = NO;
     
-    _player = [SCPlayer player];
-    SCVideoPlayerView *playerView = [[SCVideoPlayerView alloc] initWithPlayer:_player];
+    player = [SCPlayer player];
+    SCVideoPlayerView *playerView = [[SCVideoPlayerView alloc] initWithPlayer:player];
     playerView.tag = 400;
     playerView.playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     playerView.frame = self.scanPreviewView.bounds;
     playerView.autoresizingMask = self.scanPreviewView.autoresizingMask;
     [self.scanPreviewView addSubview:playerView];
-    _player.loopEnabled = YES;
+    player.loopEnabled = YES;
     
-    [_player setItemByAsset:_recorder.session.assetRepresentingSegments];
-    [_player play];
+    [player setItemByAsset:_recorder.session.assetRepresentingSegments];
+    [player play];
     
     UIView *videoOperateView = [[UIView alloc] init];
     videoOperateView.alpha = 0;
@@ -312,8 +362,8 @@
 
 - (void)removePreviewMode {
     self.captureRealBtn.enabled = YES;
-    [_player pause];
-    _player = nil;
+    [player pause];
+    player = nil;
     for (UIView *subview in self.scanPreviewView.subviews) {
         if (subview.tag == 400) {
             [subview removeFromSuperview];
@@ -330,7 +380,7 @@
 }
 
 - (void)saveCapture {
-    [_player pause];
+    [player pause];
     
     void(^completionHandler)(NSURL *url, NSError *error) = ^(NSURL *url, NSError *error) {
         if (error == nil) {
@@ -359,7 +409,7 @@
     
     CFTimeInterval time = CACurrentMediaTime();
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        [_player play];
+        [player play];
         
         NSLog(@"Completed compression in %fs", CACurrentMediaTime() - time);
         

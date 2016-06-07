@@ -463,7 +463,7 @@
         [self doNextWhenVideoSavedSuccess];
         
         if ([delegate respondsToSelector:@selector(finishWechatShortVideoCapture:)]) {
-            [delegate finishWechatShortVideoCapture:VIDEO_OUTPUTFILE];
+            [delegate finishWechatShortVideoCapture:(_strFilePath == nil ? VIDEO_OUTPUTFILE  : [NSURL fileURLWithPath:_strFilePath])];
         }
     } else {
         self.progressHUD.labelText = [NSString stringWithFormat:@"Failed to save\n%@", error.localizedDescription];

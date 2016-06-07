@@ -280,8 +280,6 @@
     captureValidFlag = YES;
 }
 
-
-
 - (void)cancelCaptureWithSaveFlag:(BOOL)saveFlag {
     [_recorder pause:^{
         if (saveFlag) {
@@ -324,6 +322,19 @@
     [player setItemByAsset:_recorder.session.assetRepresentingSegments];
     [player play];
     
+    UIView *videoOperateView = [self customvideoOperateView];
+    videoOperateView.tag = 400;
+    
+    [self.operatorView addSubview:videoOperateView];
+
+    [UIView animateWithDuration:1 animations:^{
+        videoOperateView.alpha = 1;
+    } completion:^(BOOL finished) {
+    }];
+}
+
+- (UIView *)customvideoOperateView
+{
     UIView *videoOperateView = [[UIView alloc] init];
     videoOperateView.alpha = 0;
     videoOperateView.tag = 400;
@@ -351,13 +362,7 @@
     [videoRetakeBtn addTarget:self action:@selector(removePreviewMode) forControlEvents:UIControlEventTouchUpInside];
     [videoOperateView addSubview:videoRetakeBtn];
     
-    [self.operatorView addSubview:videoOperateView];
-    
-    
-    [UIView animateWithDuration:1 animations:^{
-        videoOperateView.alpha = 1;
-    } completion:^(BOOL finished) {
-    }];
+    return videoOperateView;
 }
 
 - (void)removePreviewMode {

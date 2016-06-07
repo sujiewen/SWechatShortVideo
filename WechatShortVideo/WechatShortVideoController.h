@@ -51,4 +51,17 @@
  */
 - (void)doNextWhenVideoSavedSuccess;
 
+/**
+ *  customvideoOperateView based on operatorView and customvideoOperateView.tag = 400
+ */
+- (UIView *)customvideoOperateView;
+/**
+ *  reset
+ */
+- (void)removePreviewMode;
+/**
+ *  save
+ */
+- (void)saveCapture;
+
 @end
